@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     import aiohttp
 
 
-async def get_text(session: "aiohttp.ClientSession", url: str) -> str:
-    async with session.get(url) as resp:
+async def get_text(session: "aiohttp.ClientSession", url: str, headers: dict | None = None) -> str:
+    async with session.get(url, headers=headers) as resp:
         resp.raise_for_status()
         return await resp.text()
