@@ -36,6 +36,13 @@ GEO_INTERVAL_MIN = max(1, _int("GEO_INTERVAL_MIN", 5))
 GEO_THRESHOLD = _int("GEO_THRESHOLD", 5)
 GEO_MAX_AGE_HOURS = _int("GEO_MAX_AGE_HOURS", 3)
 
+# Berita pasar (Bloomberg + Forex Factory) untuk XAUUSD / BTCUSD / IHSG
+NEWS_INTERVAL_MIN = max(1, _int("NEWS_INTERVAL_MIN", 10))
+NEWS_THRESHOLD = _int("NEWS_THRESHOLD", 4)        # skor minimum untuk alert otomatis
+NEWS_MAX_AGE_HOURS = _int("NEWS_MAX_AGE_HOURS", 3)
+NEWS_PING = _int("NEWS_PING", 0) == 1             # 1 = ping ALERT_ROLE_ID saat alert berita
+NEWS_EXTRA_FEEDS = _list("NEWS_EXTRA_FEEDS", "")  # format: Nama|https://url, dipisah koma
+
 IPO_SOURCE_URLS = _list("IPO_SOURCE_URLS", "https://e-ipo.co.id")
 IPO_ALERT_HOUR = _int("IPO_ALERT_HOUR", 8)
 IPO_SEED_FILE = os.getenv("IPO_SEED_FILE", "data/ipo_seed.json")
