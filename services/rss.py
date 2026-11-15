@@ -18,6 +18,7 @@ class NewsItem:
     published: datetime | None
     key: str
     score: int = 0
+    assets: tuple[str, ...] = ()
 
 
 def _norm_title(title: str) -> str:
@@ -50,5 +51,5 @@ def parse_rss(xml_text: str, source: str) -> list[NewsItem]:
     return items
 
 
-async def fetch_feed(session, name: str, url: str) -> list[NewsItem]:
-    return parse_rss(await get_text(session, url), name)
+async def fetch_feed(session, name: str, url: str, headers: dict | None = None) -> list[NewsItem]:
+    return parse_rss(await get_text(session, url, headers), name)
