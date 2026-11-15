@@ -2,8 +2,9 @@ name: econ-alerts
 
 on:
   schedule:
+    # Interval minimum GitHub = 5 menit; menit dibuat "ganjil" agar tidak bentrok dengan jam sibuk (:00).
     - cron: "3,13,23,33,43,53 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch: {}   # tombol "Run workflow" untuk uji manual
 
 concurrency:
   group: econ-alerts
@@ -27,6 +28,7 @@ jobs:
 
       - run: pip install -r requirements-actions.txt
 
+      # State (alert yang sudah terkirim + cache kalender) dipulihkan dari run sebelumnya
       - name: Restore state
         uses: actions/cache/restore@v4
         with:
@@ -44,10 +46,13 @@ jobs:
           TIMEZONE: Asia/Jakarta
           CAL_CURRENCIES: USD
           CAL_ALERT_IMPACTS: High
-          CAL_ALERT_LEAD_MINUTES: "45,15"
+          CAL_ALERT_LEAD_MINUTES: "45,15"   # lebih longgar karena jadwal Actions bisa telat 5-30 menit
           BRIEFING_HOUR: "7"
           GEO_THRESHOLD: "5"
           GEO_MAX_AGE_HOURS: "3"
+          NEWS_THRESHOLD: "4"
+          NEWS_MAX_AGE_HOURS: "3"
+          NEWS_PING: "0"
           IPO_ALERT_HOUR: "8"
 
       - name: Save state
