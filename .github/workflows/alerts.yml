@@ -48,9 +48,9 @@ jobs:
           CAL_ALERT_IMPACTS: High
           CAL_ALERT_LEAD_MINUTES: "45,15"   # lebih longgar karena jadwal Actions bisa telat 5-30 menit
           BRIEFING_HOUR: "7"
-          GEO_THRESHOLD: "5"
-          GEO_MAX_AGE_HOURS: "3"
-          NEWS_THRESHOLD: "4"
+          GEO_THRESHOLD: "4"
+          GEO_MAX_AGE_HOURS: "6"
+          NEWS_THRESHOLD: "3"
           NEWS_MAX_AGE_HOURS: "3"
           NEWS_PING: "0"
           IPO_ALERT_HOUR: "8"
