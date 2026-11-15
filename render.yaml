@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: econ-discord-bot
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: ALERT_CHANNEL_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
+      - key: ALERT_ROLE_ID
+        sync: false
