@@ -19,10 +19,11 @@ from db import Database
 from services.calendar import BULAN, CalendarService, day_label, filter_events, fmt_event
 from services.geopolitics import GeoService
 from services.ipo import IpoService, load_seed
+from services.news import NewsService, format_line
 
 log = logging.getLogger("run_once")
 
-RED, ORANGE, DARK_RED, GREEN = 0xE74C3C, 0xE67E22, 0x992D22, 0x2ECC71
+RED, ORANGE, DARK_RED, GREEN, BLUE = 0xE74C3C, 0xE67E22, 0x992D22, 0x2ECC71, 0x3498DB
 CAL_NOTE = "Volatilitas XAUUSD/BTC biasanya meningkat di sekitar rilis data AS. Bukan sinyal trading."
 GEO_NOTE = (
     "Eskalasi militer biasanya memicu risk-off: emas (XAU) sering menguat sebagai safe haven, "
@@ -123,6 +124,27 @@ async def check_geo(notify, svc: GeoService, db: Database) -> None:
     db.mark_sent(*(f"geo:{i.key}" for i in new))
 
 
+# ---------------------------------------------------------------------- berita
+NEWS_NOTE = (
+    "Headline Bloomberg & Forex Factory diberi skor berdasarkan kata kunci untuk XAUUSD, BTCUSD, dan IHSG. "
+    "Bukan sinyal trading."
+)
+
+
+async def check_news(notify, svc: NewsService, db: Database) -> None:
+    items = await svc.scan(config.NEWS_MAX_AGE_HOURS)
+    new = [i for i in items if not db.was_sent(f"news:{i.key}")]
+    if not new:
+        return
+    hot = [i for i in new if i.score >= config.NEWS_THRESHOLD][:6]
+    if hot:
+        body = "\n".join(format_line(i, config.NEWS_THRESHOLD, config.TZ) for i in hot)
+        if not await notify.send(embed("📰 Berita pasar penting", body + f"\n\n_{NEWS_NOTE}_", BLUE),
+                                 ping=config.NEWS_PING):
+            return
+    db.mark_sent(*(f"news:{i.key}" for i in new))
+
+
 # ------------------------------------------------------------------------ IPO
 def _fmt_date(iso: str | None) -> str:
     if not iso:
@@ -181,6 +203,7 @@ async def run_all(notify, session, db: Database, now: datetime) -> dict[str, boo
     jobs = {
         "kalender": cal_job(),
         "geopolitik": check_geo(notify, GeoService(session), db),
+        "berita": check_news(notify, NewsService(session), db),
         "ipo": check_ipo(notify, IpoService(session, db, config.IPO_SOURCE_URLS), db, now),
     }
     results = await asyncio.gather(*jobs.values(), return_exceptions=True)
